@@ -1,0 +1,23 @@
+[project]
+name = "ComfyUI-FL-SeedVR2"
+description = "SeedVR2 1.4B image restoration and upscaling for ComfyUI"
+version = "1.0.0"
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
+dependencies = []
+classifiers = [
+    "Operating System :: OS Independent",
+    "Environment :: GPU :: NVIDIA CUDA",
+    "Environment :: GPU :: AMD ROCm",
+    "Environment :: GPU :: Apple Metal",
+]
+
+[project.urls]
+Repository = "https://github.com/filliptm/ComfyUI-FL-SeedVR2"
+"Bug Tracker" = "https://github.com/filliptm/ComfyUI-FL-SeedVR2/issues"
+
+[tool.comfy]
+PublisherId = "machinedelusions"
+DisplayName = "ComfyUI-FL-SeedVR2"
+Icon = "https://avatars.githubusercontent.com/u/55672949"
+requires-comfyui = ">=0.28.0"
