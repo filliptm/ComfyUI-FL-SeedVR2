@@ -3,8 +3,27 @@ import comfy.model_management
 import comfy.model_patcher
 import comfy.sd
 import comfy.utils
+from comfyui_version import __version__ as COMFYUI_VERSION
 
 from .model_info import SEEDVR2_1_4B_CONFIG
+
+
+MIN_COMFYUI_VERSION = (0, 28, 0)
+
+
+def _version_tuple(version):
+    version = version.split("+", 1)[0].split("-", 1)[0]
+    return tuple(int(part) for part in version.split(".")[:3])
+
+
+def require_supported_comfyui():
+    if _version_tuple(COMFYUI_VERSION) < MIN_COMFYUI_VERSION:
+        minimum = ".".join(str(part) for part in MIN_COMFYUI_VERSION)
+        raise RuntimeError(
+            f"FL SeedVR2 requires ComfyUI {minimum} or newer; found {COMFYUI_VERSION}. "
+            "Update ComfyUI and restart it before loading the model. Existing downloaded "
+            "model files are valid and do not need to be downloaded again."
+        )
 
 
 def _validate_model_keys(model, state_dict):
@@ -13,6 +32,14 @@ def _validate_model_keys(model, state_dict):
     missing = sorted(expected - actual)
     unexpected = sorted(actual - expected)
     if missing or unexpected:
+        if not missing and unexpected and all(".txt." in key for key in unexpected):
+            minimum = ".".join(str(part) for part in MIN_COMFYUI_VERSION)
+            raise RuntimeError(
+                f"ComfyUI {COMFYUI_VERSION} built an incompatible SeedVR2 architecture: "
+                f"{len(unexpected)} text-branch checkpoint keys were not recognized. "
+                f"Update ComfyUI to {minimum} or newer and restart it. The checkpoint is valid "
+                "and does not need to be downloaded again."
+            )
         details = []
         if missing:
             details.append(f"{len(missing)} missing keys, first: {missing[0]}")
@@ -22,6 +49,7 @@ def _validate_model_keys(model, state_dict):
 
 
 def load_seedvr2_model(model_path):
+    require_supported_comfyui()
     model_path = str(model_path)
     state_dict = comfy.utils.load_torch_file(model_path)
     model_config = comfy.model_detection.model_config_from_unet_config(
