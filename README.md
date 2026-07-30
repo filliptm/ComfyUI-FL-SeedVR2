@@ -93,6 +93,15 @@ registered through `extra_model_paths.yaml` are also supported.
 The transformer must be the `_comfyui` variant. The plain checkpoint does not
 contain the fixed conditioning tensors required by ComfyUI.
 
+## Troubleshooting
+
+### `unexpected keys`, starting with `blocks.0.attn.proj_out.txt.bias`
+
+This means ComfyUI is using an older SeedVR2 architecture, not that the automatic
+download is corrupt. Update ComfyUI to 0.28.0 or newer, restart it, and queue the
+loader again. The downloaded transformer and VAE are valid and do not need to be
+deleted or downloaded again.
+
 ## Key Parameters
 
 - **download_if_missing** - Download both pinned model files when they are not

@@ -1,7 +1,7 @@
 from comfy_api.latest import io
 
 from ..modules.downloader import ensure_model_files
-from ..modules.loader import load_seedvr2_model, load_seedvr2_vae
+from ..modules.loader import load_seedvr2_model, load_seedvr2_vae, require_supported_comfyui
 
 
 class FLSeedVR2ModelLoader(io.ComfyNode):
@@ -28,6 +28,7 @@ class FLSeedVR2ModelLoader(io.ComfyNode):
 
     @classmethod
     def execute(cls, download_if_missing):
+        require_supported_comfyui()
         model_path, vae_path = ensure_model_files(download_if_missing)
         model = load_seedvr2_model(model_path)
         vae = load_seedvr2_vae(vae_path)
