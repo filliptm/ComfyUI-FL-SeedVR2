@@ -6,6 +6,8 @@ Native ComfyUI image restoration and upscaling nodes for the six-block
 [![SeedVR2 1.4B](https://img.shields.io/badge/SeedVR2--1.4B-Model%20Page-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co/lvladikov/SeedVR2-1.4B)
 [![Patreon](https://img.shields.io/badge/Patreon-Support%20Me-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/Machinedelusions)
 
+![FL SeedVR2 workflow](assets/seedvr2-workflow.png)
+
 This pack uses ComfyUI's built-in SeedVR2 model, VAE, sampler, tiling, device
 management, and offloading. It does not bundle a second SeedVR2 implementation
 or patch ComfyUI at import time.
