@@ -80,7 +80,7 @@ def load_seedvr2_model(model_path):
     model_config.set_inference_dtype(unet_dtype, manual_cast_dtype, device=load_device)
 
     model = model_config.get_model(state_dict, "")
-    _validate_model_keys(model, state_dict)
+    checkpoint_keys = set(state_dict)
 
     patcher = comfy.model_patcher.CoreModelPatcher(
         model,
@@ -90,6 +90,7 @@ def load_seedvr2_model(model_path):
     if not comfy.model_management.is_device_cpu(offload_device):
         model.to(offload_device)
     model.load_model_weights(state_dict, "", assign=patcher.is_dynamic())
+    _validate_model_keys(model, checkpoint_keys)
     patcher.cached_patcher_init = (load_seedvr2_model, (model_path,))
     return patcher
 

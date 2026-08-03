@@ -1,7 +1,7 @@
 [project]
 name = "ComfyUI-FL-SeedVR2"
 description = "SeedVR2 1.4B image restoration and upscaling for ComfyUI"
-version = "1.0.0"
+version = "1.0.1"
 license = {file = "LICENSE"}
 requires-python = ">=3.9"
 dependencies = []

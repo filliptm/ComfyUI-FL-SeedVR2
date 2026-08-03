@@ -49,6 +49,47 @@ def test_model_key_validation_is_strict():
         raise AssertionError("unexpected checkpoint keys must fail")
 
 
+def test_model_key_validation_runs_after_lazy_weights_load(monkeypatch):
+    class FakeModel(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.diffusion_model = torch.nn.Module()
+
+        def load_model_weights(self, state_dict, prefix, assign):
+            self.diffusion_model.register_parameter(
+                "weight",
+                torch.nn.Parameter(state_dict.pop("weight")),
+            )
+
+    class FakeConfig:
+        supported_inference_dtypes = [torch.float32]
+
+        def set_inference_dtype(self, dtype, manual_cast_dtype, device=None):
+            pass
+
+        def get_model(self, state_dict, prefix):
+            return model
+
+    class FakePatcher:
+        def __init__(self, model, load_device, offload_device):
+            self.model = model
+
+        def is_dynamic(self):
+            return True
+
+    model = FakeModel()
+    monkeypatch.setattr(loader, "require_supported_comfyui", lambda: None)
+    monkeypatch.setattr(loader.comfy.utils, "load_torch_file", lambda path: {"weight": torch.empty(2, 2)})
+    monkeypatch.setattr(loader.comfy.model_detection, "model_config_from_unet_config", lambda config, state_dict: FakeConfig())
+    monkeypatch.setattr(loader.comfy.model_management, "get_torch_device", lambda: torch.device("cpu"))
+    monkeypatch.setattr(loader.comfy.model_management, "unet_offload_device", lambda: torch.device("cpu"))
+    monkeypatch.setattr(loader.comfy.model_patcher, "CoreModelPatcher", FakePatcher)
+
+    patcher = loader.load_seedvr2_model("model.safetensors")
+
+    assert patcher.model.diffusion_model.weight.shape == (2, 2)
+
+
 def test_old_comfyui_version_fails_before_model_loading(monkeypatch):
     monkeypatch.setattr(loader, "COMFYUI_VERSION", "0.27.1")
 
